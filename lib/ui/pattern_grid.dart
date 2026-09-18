@@ -139,16 +139,23 @@ class _CellView extends StatelessWidget {
           color: selected ? scheme.primary : null,
           borderRadius: BorderRadius.circular(3),
         ),
-        child: Text(
-          '${cell.noteName} ${cell.instrumentText} ${cell.volumeText}',
-          style: TextStyle(
-            fontFamily: 'monospace',
-            fontSize: 12,
-            color: selected
-                ? scheme.onPrimary
-                : empty
-                    ? scheme.outline
-                    : scheme.onSurface,
+        // Never wrap: a second line would be clipped by the fixed row height
+        // and hide the volume column. Shrink instead when the channel is narrow.
+        child: FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Text(
+            '${cell.noteName} ${cell.instrumentText} ${cell.volumeText}',
+            maxLines: 1,
+            softWrap: false,
+            style: TextStyle(
+              fontFamily: 'monospace',
+              fontSize: 12,
+              color: selected
+                  ? scheme.onPrimary
+                  : empty
+                      ? scheme.outline
+                      : scheme.onSurface,
+            ),
           ),
         ),
       ),
