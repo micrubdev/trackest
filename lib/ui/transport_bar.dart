@@ -2,8 +2,24 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../engine/csound_engine.dart';
+import '../state/project_notifier.dart';
 import '../state/providers.dart';
 import 'instrument_sheet.dart';
+
+Future<void> _confirmClear(BuildContext context, ProjectNotifier notifier) async {
+  final ok = await showDialog<bool>(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: const Text('Clear pattern?'),
+      content: const Text('All 64 rows on every channel will be emptied.'),
+      actions: [
+        TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
+        TextButton(onPressed: () => Navigator.pop(context, true), child: const Text('Clear')),
+      ],
+    ),
+  );
+  if (ok == true) notifier.clearPattern();
+}
 
 /// Diagnostics: long-press Play to see what Csound has logged since the last look.
 void _showEngineLog(BuildContext context, WidgetRef ref) {
@@ -86,6 +102,12 @@ class TransportBar extends ConsumerWidget {
                   ),
               ],
               onChanged: (v) => ref.read(currentInstrumentProvider.notifier).state = v ?? 0,
+            ),
+            IconButton(
+              key: const Key('clear'),
+              tooltip: 'Clear pattern',
+              icon: const Icon(Icons.delete_sweep),
+              onPressed: () => _confirmClear(context, notifier),
             ),
             IconButton(
               key: const Key('edit-instrument'),

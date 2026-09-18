@@ -28,6 +28,16 @@ class ProjectNotifier extends Notifier<Project> {
     _engine.setCell(row, ch, cell);
   }
 
+  /// Empties the whole pattern; instruments, bpm and lpb are kept.
+  void clearPattern() {
+    state = state.copyWith(pattern: Pattern.empty());
+    for (var r = 0; r < Pattern.rows; r++) {
+      for (var ch = 0; ch < Pattern.channels; ch++) {
+        _engine.setCell(r, ch, Cell.empty);
+      }
+    }
+  }
+
   void setParam(int id, String param, double value) {
     state = state.setInstrument(state.instruments[id].withParam(param, value));
     _engine.setParam(id, param, value);

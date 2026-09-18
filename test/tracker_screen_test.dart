@@ -60,4 +60,24 @@ void main() {
     await tester.pump();
     expect(fake.log.last, startsWith('setParam 0 cutoff'));
   });
+
+  testWidgets('clear button asks for confirmation, then empties the pattern', (tester) async {
+    await pumpApp(tester);
+    await tester.tap(find.byKey(const Key('key-C4')));
+    await tester.pump();
+    expect(find.text('C-4 00 --'), findsOneWidget);
+
+    await tester.tap(find.byKey(const Key('clear')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Cancel'));
+    await tester.pumpAndSettle();
+    expect(find.text('C-4 00 --'), findsOneWidget);
+
+    await tester.tap(find.byKey(const Key('clear')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Clear'));
+    await tester.pumpAndSettle();
+    expect(find.text('C-4 00 --'), findsNothing);
+    expect(fake.log.last, 'setCell 63 3 -1 -1 -1');
+  });
 }

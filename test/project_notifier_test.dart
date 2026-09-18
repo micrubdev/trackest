@@ -36,6 +36,18 @@ void main() {
     expect(fake.log, ['setBpm 300', 'setBpm 20']);
   });
 
+  test('clearPattern empties every cell and pushes them to the engine', () {
+    final n = c.read(projectProvider.notifier);
+    n.setCell(2, 1, const Cell(note: 48, instrument: 0));
+    n.setBpm(140);
+    fake.log.clear();
+    n.clearPattern();
+    expect(c.read(projectProvider).pattern.at(2, 1), Cell.empty);
+    expect(c.read(projectProvider).bpm, 140, reason: 'only the pattern is cleared');
+    expect(fake.log.length, 256);
+    expect(fake.log, contains('setCell 2 1 -1 -1 -1'));
+  });
+
   test('syncAll pushes every cell, param, bpm and lpb', () {
     c.read(projectProvider.notifier).syncAll();
     final cells = fake.log.where((l) => l.startsWith('setCell')).length;
