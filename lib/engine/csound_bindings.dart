@@ -30,12 +30,18 @@ typedef _FirstMsgD = Pointer<Utf8> Function(_Csound);
 // jclass, so they are passed as null.
 typedef _NewAndroidC = Int64 Function(Pointer<Void>, Pointer<Void>, Uint8);
 typedef _NewAndroidD = int Function(Pointer<Void>, Pointer<Void>, int);
-typedef _GetCsoundC = Int64 Function(Pointer<Void>, Pointer<Void>, Int64, Pointer<Void>);
-typedef _GetCsoundD = int Function(Pointer<Void>, Pointer<Void>, int, Pointer<Void>);
-typedef _ObjVoidC = Void Function(Pointer<Void>, Pointer<Void>, Int64, Pointer<Void>);
-typedef _ObjVoidD = void Function(Pointer<Void>, Pointer<Void>, int, Pointer<Void>);
-typedef _PauseC = Void Function(Pointer<Void>, Pointer<Void>, Int64, Pointer<Void>, Uint8);
-typedef _PauseD = void Function(Pointer<Void>, Pointer<Void>, int, Pointer<Void>, int);
+typedef _GetCsoundC =
+    Int64 Function(Pointer<Void>, Pointer<Void>, Int64, Pointer<Void>);
+typedef _GetCsoundD =
+    int Function(Pointer<Void>, Pointer<Void>, int, Pointer<Void>);
+typedef _ObjVoidC =
+    Void Function(Pointer<Void>, Pointer<Void>, Int64, Pointer<Void>);
+typedef _ObjVoidD =
+    void Function(Pointer<Void>, Pointer<Void>, int, Pointer<Void>);
+typedef _PauseC =
+    Void Function(Pointer<Void>, Pointer<Void>, Int64, Pointer<Void>, Uint8);
+typedef _PauseD =
+    void Function(Pointer<Void>, Pointer<Void>, int, Pointer<Void>, int);
 typedef _DeleteC = Void Function(Pointer<Void>, Pointer<Void>, Int64);
 typedef _DeleteD = void Function(Pointer<Void>, Pointer<Void>, int);
 
@@ -44,36 +50,62 @@ typedef _DeleteD = void Function(Pointer<Void>, Pointer<Void>, int);
 class CsoundBindings {
   final DynamicLibrary _lib;
 
-  late final _CreateD create = _lib.lookupFunction<_CreateC, _CreateD>('csoundCreate');
-  late final _StrIntD _setOption = _lib.lookupFunction<_StrIntC, _StrIntD>('csoundSetOption');
-  late final _StrIntD _compileOrc = _lib.lookupFunction<_StrIntC, _StrIntD>('csoundCompileOrc');
+  late final _CreateD create = _lib.lookupFunction<_CreateC, _CreateD>(
+    'csoundCreate',
+  );
+  late final _StrIntD _setOption = _lib.lookupFunction<_StrIntC, _StrIntD>(
+    'csoundSetOption',
+  );
+  late final _StrIntD _compileOrc = _lib.lookupFunction<_StrIntC, _StrIntD>(
+    'csoundCompileOrc',
+  );
   late final _IntD start = _lib.lookupFunction<_IntC, _IntD>('csoundStart');
-  late final _IntD performKsmps = _lib.lookupFunction<_IntC, _IntD>('csoundPerformKsmps');
+  late final _IntD performKsmps = _lib.lookupFunction<_IntC, _IntD>(
+    'csoundPerformKsmps',
+  );
   late final _VoidD stop = _lib.lookupFunction<_VoidC, _VoidD>('csoundStop');
-  late final _VoidD destroy = _lib.lookupFunction<_VoidC, _VoidD>('csoundDestroy');
-  late final _NoArgIntD sizeOfMyflt = _lib.lookupFunction<_NoArgIntC, _NoArgIntD>('csoundGetSizeOfMYFLT');
-  late final _TableSetD tableSet = _lib.lookupFunction<_TableSetC, _TableSetD>('csoundTableSet');
-  late final _SetChanD _setControlChannel =
-      _lib.lookupFunction<_SetChanC, _SetChanD>('csoundSetControlChannel');
-  late final _GetChanD _getControlChannel =
-      _lib.lookupFunction<_GetChanC, _GetChanD>('csoundGetControlChannel');
-  late final _MsgBufD createMessageBuffer =
-      _lib.lookupFunction<_MsgBufC, _MsgBufD>('csoundCreateMessageBuffer');
-  late final _IntD messageCount = _lib.lookupFunction<_IntC, _IntD>('csoundGetMessageCnt');
-  late final _FirstMsgD _firstMessage =
-      _lib.lookupFunction<_FirstMsgC, _FirstMsgD>('csoundGetFirstMessage');
-  late final _VoidD popFirstMessage = _lib.lookupFunction<_VoidC, _VoidD>('csoundPopFirstMessage');
+  late final _VoidD destroy = _lib.lookupFunction<_VoidC, _VoidD>(
+    'csoundDestroy',
+  );
+  late final _NoArgIntD sizeOfMyflt = _lib
+      .lookupFunction<_NoArgIntC, _NoArgIntD>('csoundGetSizeOfMYFLT');
+  late final _TableSetD tableSet = _lib.lookupFunction<_TableSetC, _TableSetD>(
+    'csoundTableSet',
+  );
+  late final _SetChanD _setControlChannel = _lib
+      .lookupFunction<_SetChanC, _SetChanD>('csoundSetControlChannel');
+  late final _GetChanD _getControlChannel = _lib
+      .lookupFunction<_GetChanC, _GetChanD>('csoundGetControlChannel');
+  late final _MsgBufD createMessageBuffer = _lib
+      .lookupFunction<_MsgBufC, _MsgBufD>('csoundCreateMessageBuffer');
+  late final _IntD messageCount = _lib.lookupFunction<_IntC, _IntD>(
+    'csoundGetMessageCnt',
+  );
+  late final _FirstMsgD _firstMessage = _lib
+      .lookupFunction<_FirstMsgC, _FirstMsgD>('csoundGetFirstMessage');
+  late final _VoidD popFirstMessage = _lib.lookupFunction<_VoidC, _VoidD>(
+    'csoundPopFirstMessage',
+  );
 
   late final _NewAndroidD _newAndroidCsound = _lib
-      .lookupFunction<_NewAndroidC, _NewAndroidD>('Java_csnd6_csndJNI_new_1AndroidCsound_1_1SWIG_10');
-  late final _GetCsoundD _getCsound =
-      _lib.lookupFunction<_GetCsoundC, _GetCsoundD>('Java_csnd6_csndJNI_Csound_1GetCsound');
-  late final _ObjVoidD _setOpenSlCallbacks = _lib.lookupFunction<_ObjVoidC, _ObjVoidD>(
-      'Java_csnd6_csndJNI_AndroidCsound_1setOpenSlCallbacks');
-  late final _PauseD _pause =
-      _lib.lookupFunction<_PauseC, _PauseD>('Java_csnd6_csndJNI_AndroidCsound_1Pause');
-  late final _DeleteD _deleteAndroidCsound =
-      _lib.lookupFunction<_DeleteC, _DeleteD>('Java_csnd6_csndJNI_delete_1AndroidCsound');
+      .lookupFunction<_NewAndroidC, _NewAndroidD>(
+        'Java_csnd6_csndJNI_new_1AndroidCsound_1_1SWIG_10',
+      );
+  late final _GetCsoundD _getCsound = _lib
+      .lookupFunction<_GetCsoundC, _GetCsoundD>(
+        'Java_csnd6_csndJNI_Csound_1GetCsound',
+      );
+  late final _ObjVoidD _setOpenSlCallbacks = _lib
+      .lookupFunction<_ObjVoidC, _ObjVoidD>(
+        'Java_csnd6_csndJNI_AndroidCsound_1setOpenSlCallbacks',
+      );
+  late final _PauseD _pause = _lib.lookupFunction<_PauseC, _PauseD>(
+    'Java_csnd6_csndJNI_AndroidCsound_1Pause',
+  );
+  late final _DeleteD _deleteAndroidCsound = _lib
+      .lookupFunction<_DeleteC, _DeleteD>(
+        'Java_csnd6_csndJNI_delete_1AndroidCsound',
+      );
 
   CsoundBindings(this._lib);
 
@@ -90,8 +122,9 @@ class CsoundBindings {
   int newAndroidCsound({required bool async}) =>
       _newAndroidCsound(nullptr, nullptr, async ? 1 : 0);
 
-  Pointer<Void> csoundOf(int androidHandle) =>
-      Pointer<Void>.fromAddress(_getCsound(nullptr, nullptr, androidHandle, nullptr));
+  Pointer<Void> csoundOf(int androidHandle) => Pointer<Void>.fromAddress(
+    _getCsound(nullptr, nullptr, androidHandle, nullptr),
+  );
 
   void setOpenSlCallbacks(int androidHandle) =>
       _setOpenSlCallbacks(nullptr, nullptr, androidHandle, nullptr);

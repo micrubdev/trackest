@@ -43,7 +43,9 @@ class _TrackerScreenState extends ConsumerState<TrackerScreen> {
   Future<String> _extractSample() async {
     final data = await rootBundle.load('assets/kick.wav');
     final file = File('${Directory.systemTemp.path}/trackest_kick.wav');
-    await file.writeAsBytes(data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes));
+    await file.writeAsBytes(
+      data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes),
+    );
     return file.path;
   }
 
@@ -56,9 +58,16 @@ class _TrackerScreenState extends ConsumerState<TrackerScreen> {
             const TransportBar(),
             if (_error != null)
               MaterialBanner(
-                content: Text(_error!, maxLines: 6, overflow: TextOverflow.ellipsis),
+                content: Text(
+                  _error!,
+                  maxLines: 6,
+                  overflow: TextOverflow.ellipsis,
+                ),
                 actions: [
-                  TextButton(onPressed: () => setState(() => _error = null), child: const Text('OK')),
+                  TextButton(
+                    onPressed: () => setState(() => _error = null),
+                    child: const Text('OK'),
+                  ),
                 ],
               ),
             const Expanded(child: PatternGrid()),

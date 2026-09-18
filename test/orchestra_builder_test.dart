@@ -25,6 +25,7 @@ void main() {
           reason: 'instr ${10 + id}');
     }
     expect(orc, contains('schedule 1, 0, -1'));
+    expect(orc, contains('chnget "length"'), reason: 'pattern length is a live channel');
   });
 
   test('slot params are read from named channels', () {

@@ -17,17 +17,22 @@ class FakeEngine implements Engine {
   }
 
   @override
-  void setCell(int row, int ch, Cell cell) =>
-      log.add('setCell $row $ch ${cell.note} ${cell.instrument} ${cell.volume}');
+  void setCell(int row, int ch, Cell cell) => log.add(
+    'setCell $row $ch ${cell.note} ${cell.instrument} ${cell.volume}',
+  );
 
   @override
-  void setParam(int id, String param, double value) => log.add('setParam $id $param $value');
+  void setParam(int id, String param, double value) =>
+      log.add('setParam $id $param $value');
 
   @override
   void setBpm(int bpm) => log.add('setBpm $bpm');
 
   @override
   void setLpb(int lpb) => log.add('setLpb $lpb');
+
+  @override
+  void setLength(int rows) => log.add('setLength $rows');
 
   @override
   void play() {

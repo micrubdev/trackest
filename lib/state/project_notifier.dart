@@ -21,7 +21,8 @@ class ProjectNotifier extends Notifier<Project> {
   @override
   Project build() => Project.initial();
 
-  String orchestra() => OrchestraBuilder.build(state.instruments, samplePath: samplePath);
+  String orchestra() =>
+      OrchestraBuilder.build(state.instruments, samplePath: samplePath);
 
   void setCell(int row, int ch, Cell cell) {
     state = state.copyWith(pattern: state.pattern.setCell(row, ch, cell));
@@ -49,6 +50,12 @@ class ProjectNotifier extends Notifier<Project> {
     _engine.setBpm(v);
   }
 
+  void setLength(int rows) {
+    final v = rows.clamp(1, Pattern.rows);
+    state = state.copyWith(length: v);
+    _engine.setLength(v);
+  }
+
   /// Changing a template changes the orchestra, so the engine is restarted.
   Future<void> setTemplate(int id, Template template) async {
     if (state.instruments[id].template == template) return;
@@ -69,6 +76,7 @@ class ProjectNotifier extends Notifier<Project> {
     final e = _engine;
     e.setBpm(state.bpm);
     e.setLpb(state.linesPerBeat);
+    e.setLength(state.length);
     for (final inst in state.instruments) {
       for (final p in inst.params.entries) {
         e.setParam(inst.id, p.key, p.value);

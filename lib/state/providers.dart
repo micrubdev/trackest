@@ -6,9 +6,13 @@ import '../model/project.dart';
 import 'project_notifier.dart';
 
 /// Overridden in `main` with the platform engine.
-final engineProvider = Provider<Engine>((_) => throw UnimplementedError('override engineProvider'));
+final engineProvider = Provider<Engine>(
+  (_) => throw UnimplementedError('override engineProvider'),
+);
 
-final projectProvider = NotifierProvider<ProjectNotifier, Project>(ProjectNotifier.new);
+final projectProvider = NotifierProvider<ProjectNotifier, Project>(
+  ProjectNotifier.new,
+);
 
 typedef Cursor = ({int row, int ch});
 
@@ -17,4 +21,6 @@ final currentInstrumentProvider = StateProvider<int>((_) => 0);
 final octaveProvider = StateProvider<int>((_) => 4);
 final editStepProvider = StateProvider<int>((_) => 1);
 final playingProvider = StateProvider<bool>((_) => false);
-final playRowProvider = StreamProvider<int>((ref) => ref.watch(engineProvider).row);
+final playRowProvider = StreamProvider<int>(
+  (ref) => ref.watch(engineProvider).row,
+);

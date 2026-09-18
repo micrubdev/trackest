@@ -111,6 +111,15 @@ class TransportBar extends ConsumerWidget {
             // Second row: instrument selection. One row does not fit a phone.
             Row(
               children: [
+                _Stepper(
+                  key: const Key('length'),
+                  label: 'Len',
+                  value: '${project.length}',
+                  onDec: () => notifier.setLength(project.length - 1),
+                  onInc: () => notifier.setLength(project.length + 1),
+                  onDecLong: () => notifier.setLength(project.length - 16),
+                  onIncLong: () => notifier.setLength(project.length + 16),
+                ),
                 const SizedBox(width: 8),
                 const Text(
                   'Inst ',
@@ -175,6 +184,7 @@ class _Stepper extends StatelessWidget {
   final VoidCallback? onIncLong;
 
   const _Stepper({
+    super.key,
     required this.label,
     required this.value,
     required this.onDec,

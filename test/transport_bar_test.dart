@@ -17,7 +17,7 @@ void main() {
     ));
     expect(tester.takeException(), isNull, reason: 'row overflowed');
 
-    for (final k in const ['play', 'instrument', 'clear', 'edit-instrument']) {
+    for (final k in const ['play', 'length', 'instrument', 'clear', 'edit-instrument']) {
       final rect = tester.getRect(find.byKey(Key(k)));
       expect(rect.right, lessThanOrEqualTo(360), reason: '$k is off screen');
       expect(rect.left, greaterThanOrEqualTo(0), reason: '$k is off screen');

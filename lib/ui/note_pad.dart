@@ -5,7 +5,20 @@ import '../model/cell.dart';
 import '../model/pattern.dart';
 import '../state/providers.dart';
 
-const _names = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+const _names = [
+  'C',
+  'C#',
+  'D',
+  'D#',
+  'E',
+  'F',
+  'F#',
+  'G',
+  'G#',
+  'A',
+  'A#',
+  'B',
+];
 
 /// Two-octave key pad plus OFF / DEL. Writes into the cursor cell and steps down.
 class NotePad extends ConsumerWidget {
@@ -20,8 +33,10 @@ class NotePad extends ConsumerWidget {
       final cursor = ref.read(cursorProvider);
       ref.read(projectProvider.notifier).setCell(cursor.row, cursor.ch, cell);
       final step = ref.read(editStepProvider);
-      ref.read(cursorProvider.notifier).state =
-          (row: (cursor.row + step) % Pattern.rows, ch: cursor.ch);
+      ref.read(cursorProvider.notifier).state = (
+        row: (cursor.row + step) % Pattern.rows,
+        ch: cursor.ch,
+      );
     }
 
     void note(int midi) {
@@ -29,7 +44,8 @@ class NotePad extends ConsumerWidget {
       write(Cell(note: midi, instrument: ref.read(currentInstrumentProvider)));
     }
 
-    Widget key(String label, VoidCallback onTap, {Color? color, Key? k}) => Expanded(
+    Widget key(String label, VoidCallback onTap, {Color? color, Key? k}) =>
+        Expanded(
           child: Padding(
             padding: const EdgeInsets.all(1.5),
             child: Material(
@@ -39,7 +55,13 @@ class NotePad extends ConsumerWidget {
               child: InkWell(
                 onTap: onTap,
                 child: Center(
-                  child: Text(label, style: const TextStyle(fontFamily: 'monospace', fontSize: 12)),
+                  child: Text(
+                    label,
+                    style: const TextStyle(
+                      fontFamily: 'monospace',
+                      fontSize: 12,
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -47,18 +69,20 @@ class NotePad extends ConsumerWidget {
         );
 
     Widget octaveRow(int oct) => Expanded(
-          child: Row(
-            children: [
-              for (var i = 0; i < 12; i++)
-                key(
-                  '${_names[i]}$oct',
-                  () => note(oct * 12 + i),
-                  color: _names[i].endsWith('#') ? scheme.surfaceContainerLow : null,
-                  k: Key('key-${_names[i]}$oct'),
-                ),
-            ],
-          ),
-        );
+      child: Row(
+        children: [
+          for (var i = 0; i < 12; i++)
+            key(
+              '${_names[i]}$oct',
+              () => note(oct * 12 + i),
+              color: _names[i].endsWith('#')
+                  ? scheme.surfaceContainerLow
+                  : null,
+              k: Key('key-${_names[i]}$oct'),
+            ),
+        ],
+      ),
+    );
 
     return SizedBox(
       height: 132,
@@ -69,29 +93,45 @@ class NotePad extends ConsumerWidget {
           Expanded(
             child: Row(
               children: [
-                key('OFF', () => write(const Cell(note: Cell.noteOff)),
-                    color: scheme.tertiaryContainer, k: const Key('key-off')),
-                key('DEL', () => write(Cell.empty),
-                    color: scheme.errorContainer, k: const Key('key-del')),
+                key(
+                  'OFF',
+                  () => write(const Cell(note: Cell.noteOff)),
+                  color: scheme.tertiaryContainer,
+                  k: const Key('key-off'),
+                ),
+                key(
+                  'DEL',
+                  () => write(Cell.empty),
+                  color: scheme.errorContainer,
+                  k: const Key('key-del'),
+                ),
                 key('↑', () {
                   final c = ref.read(cursorProvider);
-                  ref.read(cursorProvider.notifier).state =
-                      (row: (c.row - 1 + Pattern.rows) % Pattern.rows, ch: c.ch);
+                  ref.read(cursorProvider.notifier).state = (
+                    row: (c.row - 1 + Pattern.rows) % Pattern.rows,
+                    ch: c.ch,
+                  );
                 }),
                 key('↓', () {
                   final c = ref.read(cursorProvider);
-                  ref.read(cursorProvider.notifier).state =
-                      (row: (c.row + 1) % Pattern.rows, ch: c.ch);
+                  ref.read(cursorProvider.notifier).state = (
+                    row: (c.row + 1) % Pattern.rows,
+                    ch: c.ch,
+                  );
                 }),
                 key('←', () {
                   final c = ref.read(cursorProvider);
-                  ref.read(cursorProvider.notifier).state =
-                      (row: c.row, ch: (c.ch - 1 + Pattern.channels) % Pattern.channels);
+                  ref.read(cursorProvider.notifier).state = (
+                    row: c.row,
+                    ch: (c.ch - 1 + Pattern.channels) % Pattern.channels,
+                  );
                 }),
                 key('→', () {
                   final c = ref.read(cursorProvider);
-                  ref.read(cursorProvider.notifier).state =
-                      (row: c.row, ch: (c.ch + 1) % Pattern.channels);
+                  ref.read(cursorProvider.notifier).state = (
+                    row: c.row,
+                    ch: (c.ch + 1) % Pattern.channels,
+                  );
                 }),
               ],
             ),

@@ -7,6 +7,9 @@ class Project {
   final String name;
   final int bpm;
   final int linesPerBeat;
+
+  /// Rows played before looping (1..[Pattern.rows]); cells beyond it are kept.
+  final int length;
   final Pattern pattern;
   final List<Instrument> instruments;
 
@@ -14,6 +17,7 @@ class Project {
     required this.name,
     required this.bpm,
     required this.linesPerBeat,
+    this.length = Pattern.rows,
     required this.pattern,
     required this.instruments,
   });
@@ -42,16 +46,17 @@ class Project {
     String? name,
     int? bpm,
     int? linesPerBeat,
+    int? length,
     Pattern? pattern,
     List<Instrument>? instruments,
-  }) =>
-      Project(
-        name: name ?? this.name,
-        bpm: bpm ?? this.bpm,
-        linesPerBeat: linesPerBeat ?? this.linesPerBeat,
-        pattern: pattern ?? this.pattern,
-        instruments: instruments ?? this.instruments,
-      );
+  }) => Project(
+    name: name ?? this.name,
+    bpm: bpm ?? this.bpm,
+    linesPerBeat: linesPerBeat ?? this.linesPerBeat,
+    length: length ?? this.length,
+    pattern: pattern ?? this.pattern,
+    instruments: instruments ?? this.instruments,
+  );
 
   Project setInstrument(Instrument inst) {
     final next = List<Instrument>.of(instruments, growable: false);

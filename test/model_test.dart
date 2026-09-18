@@ -65,6 +65,7 @@ void main() {
       expect(p.instruments.length, 16);
       expect(p.bpm, 125);
       expect(p.linesPerBeat, 4);
+      expect(p.length, 64);
       expect(p.instruments[0].id, 0);
       expect(p.instruments[15].id, 15);
     });

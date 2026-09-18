@@ -14,6 +14,7 @@ abstract class Engine {
   void setParam(int id, String param, double value);
   void setBpm(int bpm);
   void setLpb(int lpb);
+  void setLength(int rows);
   void play();
   void stop();
   Stream<int> get row;

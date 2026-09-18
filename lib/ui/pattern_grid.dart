@@ -26,14 +26,17 @@ class _PatternGridState extends ConsumerState<PatternGrid> {
   void _follow(int row) {
     if (!_scroll.hasClients) return;
     final viewport = _scroll.position.viewportDimension;
-    final target = (row * kRowHeight - viewport / 2 + kRowHeight / 2)
-        .clamp(0.0, _scroll.position.maxScrollExtent);
+    final target = (row * kRowHeight - viewport / 2 + kRowHeight / 2).clamp(
+      0.0,
+      _scroll.position.maxScrollExtent,
+    );
     _scroll.jumpTo(target);
   }
 
   @override
   Widget build(BuildContext context) {
     final pattern = ref.watch(projectProvider.select((p) => p.pattern));
+    final length = ref.watch(projectProvider.select((p) => p.length));
     final cursor = ref.watch(cursorProvider);
     final playRow = ref.watch(playRowProvider).value ?? -1;
     final playing = ref.watch(playingProvider);
@@ -55,8 +58,8 @@ class _PatternGridState extends ConsumerState<PatternGrid> {
           color: isPlayRow
               ? scheme.secondaryContainer
               : isBeat
-                  ? scheme.surfaceContainerHighest.withValues(alpha: 0.5)
-                  : null,
+              ? scheme.surfaceContainerHighest.withValues(alpha: 0.5)
+              : null,
           child: Row(
             children: [
               SizedBox(
@@ -64,7 +67,11 @@ class _PatternGridState extends ConsumerState<PatternGrid> {
                 child: Text(
                   row.toString().padLeft(2, '0'),
                   textAlign: TextAlign.center,
-                  style: TextStyle(fontFamily: 'monospace', fontSize: 12, color: scheme.outline),
+                  style: TextStyle(
+                    fontFamily: 'monospace',
+                    fontSize: 12,
+                    color: scheme.outline,
+                  ),
                 ),
               ),
               for (var ch = 0; ch < Pattern.channels; ch++)
@@ -72,9 +79,14 @@ class _PatternGridState extends ConsumerState<PatternGrid> {
                   child: _CellView(
                     key: ValueKey('cell-$row-$ch'),
                     cell: pattern.at(row, ch),
+                    inactive: row >= length,
                     selected: cursor.row == row && cursor.ch == ch,
-                    onTap: () => ref.read(cursorProvider.notifier).state = (row: row, ch: ch),
-                    onLongPress: () => _editVolume(context, row, ch, pattern.at(row, ch)),
+                    onTap: () => ref.read(cursorProvider.notifier).state = (
+                      row: row,
+                      ch: ch,
+                    ),
+                    onLongPress: () =>
+                        _editVolume(context, row, ch, pattern.at(row, ch)),
                   ),
                 ),
             ],
@@ -84,7 +96,12 @@ class _PatternGridState extends ConsumerState<PatternGrid> {
     );
   }
 
-  Future<void> _editVolume(BuildContext context, int row, int ch, Cell cell) async {
+  Future<void> _editVolume(
+    BuildContext context,
+    int row,
+    int ch,
+    Cell cell,
+  ) async {
     var v = cell.volume < 0 ? 64 : cell.volume;
     final result = await showDialog<int>(
       context: context,
@@ -99,19 +116,30 @@ class _PatternGridState extends ConsumerState<PatternGrid> {
             onChanged: (x) => setState(() => v = x.round()),
           ),
           actions: [
-            TextButton(onPressed: () => Navigator.pop(context, -1), child: const Text('Default')),
-            TextButton(onPressed: () => Navigator.pop(context, v), child: const Text('Set')),
+            TextButton(
+              onPressed: () => Navigator.pop(context, -1),
+              child: const Text('Default'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(context, v),
+              child: const Text('Set'),
+            ),
           ],
         ),
       ),
     );
     if (result == null) return;
-    ref.read(projectProvider.notifier).setCell(row, ch, cell.copyWith(volume: result));
+    ref
+        .read(projectProvider.notifier)
+        .setCell(row, ch, cell.copyWith(volume: result));
   }
 }
 
 class _CellView extends StatelessWidget {
   final Cell cell;
+
+  /// Past the pattern length: shown but not played.
+  final bool inactive;
   final bool selected;
   final VoidCallback onTap;
   final VoidCallback onLongPress;
@@ -119,6 +147,7 @@ class _CellView extends StatelessWidget {
   const _CellView({
     super.key,
     required this.cell,
+    required this.inactive,
     required this.selected,
     required this.onTap,
     required this.onLongPress,
@@ -152,9 +181,9 @@ class _CellView extends StatelessWidget {
               fontSize: 12,
               color: selected
                   ? scheme.onPrimary
-                  : empty
-                      ? scheme.outline
-                      : scheme.onSurface,
+                  : empty || inactive
+                  ? scheme.outline
+                  : scheme.onSurface,
             ),
           ),
         ),

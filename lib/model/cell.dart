@@ -15,13 +15,24 @@ class Cell {
   const Cell({this.note = -1, this.instrument = -1, this.volume = -1});
 
   Cell copyWith({int? note, int? instrument, int? volume}) => Cell(
-        note: note ?? this.note,
-        instrument: instrument ?? this.instrument,
-        volume: volume ?? this.volume,
-      );
+    note: note ?? this.note,
+    instrument: instrument ?? this.instrument,
+    volume: volume ?? this.volume,
+  );
 
   static const _names = [
-    'C-', 'C#', 'D-', 'D#', 'E-', 'F-', 'F#', 'G-', 'G#', 'A-', 'A#', 'B-',
+    'C-',
+    'C#',
+    'D-',
+    'D#',
+    'E-',
+    'F-',
+    'F#',
+    'G-',
+    'G#',
+    'A-',
+    'A#',
+    'B-',
   ];
 
   String get noteName {
@@ -33,7 +44,8 @@ class Cell {
   String get instrumentText =>
       instrument < 0 ? '--' : instrument.toString().padLeft(2, '0');
 
-  String get volumeText => volume < 0 ? '--' : volume.toString().padLeft(2, '0');
+  String get volumeText =>
+      volume < 0 ? '--' : volume.toString().padLeft(2, '0');
 
   @override
   bool operator ==(Object other) =>

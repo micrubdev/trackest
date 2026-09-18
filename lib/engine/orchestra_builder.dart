@@ -42,11 +42,16 @@ giSine ftgen $sineTable, 0, 4096, 10, 1
     return b.toString();
   }
 
-  static const _sequencer = '''
+  static const _sequencer =
+      '''
 instr 1
   kBpm chnget "bpm"
   kLpb chnget "lpb"
   kPlay chnget "playing"
+  kLen chnget "length"
+  if kLen < 1 then
+    kLen = ${Pattern.rows}
+  endif
   kRow init 0
   kPhase init 0
   kWasPlaying init 0
@@ -73,6 +78,9 @@ instr 1
     endif
     if kPhase >= 1 then
       kPhase -= 1
+      if kRow >= kLen then
+        kRow = 0
+      endif
       kCh = 0
       while kCh < ${Pattern.channels} do
         kIdx = kRow * ${Pattern.channels} + kCh
@@ -95,7 +103,7 @@ instr 1
         kCh += 1
       od
       chnset kRow, "row"
-      kRow = (kRow + 1) % ${Pattern.rows}
+      kRow = (kRow + 1) % kLen
     endif
   endif
   kWasPlaying = kPlay

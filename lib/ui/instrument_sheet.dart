@@ -4,7 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../model/instrument.dart';
 import '../state/providers.dart';
 
-Future<void> showInstrumentSheet(BuildContext context, int id) => showModalBottomSheet(
+Future<void> showInstrumentSheet(BuildContext context, int id) =>
+    showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       builder: (_) => InstrumentSheet(id: id),
@@ -26,14 +27,17 @@ class InstrumentSheet extends ConsumerWidget {
         children: [
           Row(
             children: [
-              Text('Instrument ${id.toString().padLeft(2, '0')}',
-                  style: Theme.of(context).textTheme.titleMedium),
+              Text(
+                'Instrument ${id.toString().padLeft(2, '0')}',
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
               const Spacer(),
               DropdownButton<Template>(
                 key: const Key('template'),
                 value: inst.template,
                 items: [
-                  for (final t in Template.values) DropdownMenuItem(value: t, child: Text(t.name)),
+                  for (final t in Template.values)
+                    DropdownMenuItem(value: t, child: Text(t.name)),
                 ],
                 onChanged: (t) {
                   if (t != null) notifier.setTemplate(id, t);
@@ -46,14 +50,23 @@ class InstrumentSheet extends ConsumerWidget {
               children: [
                 SizedBox(
                   width: 64,
-                  child: Text(spec.name, style: const TextStyle(fontFamily: 'monospace', fontSize: 12)),
+                  child: Text(
+                    spec.name,
+                    style: const TextStyle(
+                      fontFamily: 'monospace',
+                      fontSize: 12,
+                    ),
+                  ),
                 ),
                 Expanded(
                   child: Slider(
                     key: Key('param-${spec.name}'),
                     min: spec.min,
                     max: spec.max,
-                    value: (inst.params[spec.name] ?? spec.def).clamp(spec.min, spec.max),
+                    value: (inst.params[spec.name] ?? spec.def).clamp(
+                      spec.min,
+                      spec.max,
+                    ),
                     onChanged: (v) => notifier.setParam(id, spec.name, v),
                   ),
                 ),
@@ -62,7 +75,10 @@ class InstrumentSheet extends ConsumerWidget {
                   child: Text(
                     _fmt(inst.params[spec.name] ?? spec.def),
                     textAlign: TextAlign.right,
-                    style: const TextStyle(fontFamily: 'monospace', fontSize: 12),
+                    style: const TextStyle(
+                      fontFamily: 'monospace',
+                      fontSize: 12,
+                    ),
                   ),
                 ),
               ],
@@ -72,5 +88,6 @@ class InstrumentSheet extends ConsumerWidget {
     );
   }
 
-  static String _fmt(double v) => v >= 100 ? v.round().toString() : v.toStringAsFixed(2);
+  static String _fmt(double v) =>
+      v >= 100 ? v.round().toString() : v.toStringAsFixed(2);
 }

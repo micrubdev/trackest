@@ -48,6 +48,17 @@ void main() {
     expect(fake.log, contains('setCell 2 1 -1 -1 -1'));
   });
 
+  test('setLength clamps to 1..64 and forwards', () {
+    final n = c.read(projectProvider.notifier);
+    n.setLength(16);
+    expect(c.read(projectProvider).length, 16);
+    n.setLength(0);
+    expect(c.read(projectProvider).length, 1);
+    n.setLength(99);
+    expect(c.read(projectProvider).length, 64);
+    expect(fake.log, ['setLength 16', 'setLength 1', 'setLength 64']);
+  });
+
   test('syncAll pushes every cell, param, bpm and lpb', () {
     c.read(projectProvider.notifier).syncAll();
     final cells = fake.log.where((l) => l.startsWith('setCell')).length;
@@ -60,6 +71,7 @@ void main() {
     expect(params, expectedParams);
     expect(fake.log, contains('setBpm 125'));
     expect(fake.log, contains('setLpb 4'));
+    expect(fake.log, contains('setLength 64'));
   });
 
   test('setTemplate restarts engine with a new orchestra and resyncs', () async {

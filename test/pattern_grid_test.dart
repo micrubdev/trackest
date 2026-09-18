@@ -36,4 +36,21 @@ void main() {
     expect(paragraph.size.height, oneLine.height, reason: 'text wrapped onto a second line');
     expect(paragraph.size.width, oneLine.width, reason: 'text was clipped');
   });
+
+  testWidgets('rows past the pattern length are dimmed', (tester) async {
+    final container = ProviderContainer(overrides: [engineProvider.overrideWithValue(FakeEngine())]);
+    addTearDown(container.dispose);
+    final n = container.read(projectProvider.notifier);
+    n.setCell(0, 0, const Cell(note: 48, instrument: 0));
+    n.setCell(1, 0, const Cell(note: 50, instrument: 0));
+    n.setLength(1);
+
+    await tester.pumpWidget(UncontrolledProviderScope(
+      container: container,
+      child: const MaterialApp(home: Scaffold(body: PatternGrid())),
+    ));
+
+    Color colorOf(String t) => tester.widget<Text>(find.text(t)).style!.color!;
+    expect(colorOf('D-4 00 --'), isNot(colorOf('C-4 00 --')));
+  });
 }

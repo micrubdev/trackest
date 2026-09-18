@@ -21,7 +21,8 @@ class CsoundEngine implements Engine {
   int _lastRow = -1;
   final _row = StreamController<int>.broadcast();
 
-  CsoundEngine([CsoundBindings? bindings]) : _b = bindings ?? CsoundBindings.open();
+  CsoundEngine([CsoundBindings? bindings])
+    : _b = bindings ?? CsoundBindings.open();
 
   bool get isStarted => _cs != nullptr;
 
@@ -86,6 +87,11 @@ class CsoundEngine implements Engine {
   @override
   void setLpb(int lpb) {
     if (isStarted) _b.setControlChannel(_cs, 'lpb', lpb.toDouble());
+  }
+
+  @override
+  void setLength(int rows) {
+    if (isStarted) _b.setControlChannel(_cs, 'length', rows.toDouble());
   }
 
   @override
