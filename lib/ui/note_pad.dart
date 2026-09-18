@@ -41,7 +41,18 @@ class NotePad extends ConsumerWidget {
 
     void note(int midi) {
       if (midi > 119) return;
-      write(Cell(note: midi, instrument: ref.read(currentInstrumentProvider)));
+      final cursor = ref.read(cursorProvider);
+      final keep = ref.read(keepVolumeProvider);
+      final volume = keep
+          ? ref.read(projectProvider).pattern.at(cursor.row, cursor.ch).volume
+          : -1;
+      write(
+        Cell(
+          note: midi,
+          instrument: ref.read(currentInstrumentProvider),
+          volume: volume,
+        ),
+      );
     }
 
     Widget key(String label, VoidCallback onTap, {Color? color, Key? k}) =>

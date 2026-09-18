@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:trackest/engine/fake_engine.dart';
+import 'package:trackest/model/cell.dart';
 import 'package:trackest/state/providers.dart';
 import 'package:trackest/ui/tracker_screen.dart';
 
@@ -79,5 +80,27 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('C-4 00 --'), findsNothing);
     expect(fake.log.last, 'setCell 63 3 -1 -1 -1');
+  });
+
+  testWidgets('note entry keeps the cell volume unless the option is off', (tester) async {
+    await pumpApp(tester);
+    final container = ProviderScope.containerOf(tester.element(find.byType(TrackerScreen)));
+    final n = container.read(projectProvider.notifier);
+    n.setCell(0, 0, const Cell(note: 48, instrument: 0, volume: 40));
+    n.setCell(1, 0, const Cell(note: 48, instrument: 0, volume: 40));
+    await tester.pump();
+
+    await tester.tap(find.byKey(const Key('key-D4')));
+    await tester.pump();
+    expect(fake.log.last, 'setCell 0 0 50 0 40');
+
+    await tester.tap(find.byKey(const Key('settings')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Keep volume on note entry'));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byKey(const Key('key-D4')));
+    await tester.pump();
+    expect(fake.log.last, 'setCell 1 0 50 0 -1');
   });
 }

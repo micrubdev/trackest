@@ -125,7 +125,7 @@ class TransportBar extends ConsumerWidget {
                   'Inst ',
                   style: TextStyle(
                     fontFamily: 'monospace',
-                    fontSize: 13,
+                    fontSize: 11,
                     color: Colors.white54,
                   ),
                 ),
@@ -137,7 +137,7 @@ class TransportBar extends ConsumerWidget {
                     underline: const SizedBox.shrink(),
                     style: const TextStyle(
                       fontFamily: 'monospace',
-                      fontSize: 13,
+                      fontSize: 11,
                       color: Colors.white,
                     ),
                     items: [
@@ -165,6 +165,22 @@ class TransportBar extends ConsumerWidget {
                   tooltip: 'Clear pattern',
                   icon: const Icon(Icons.delete_sweep),
                   onPressed: () => _confirmClear(context, notifier),
+                ),
+                PopupMenuButton<String>(
+                  key: const Key('settings'),
+                  tooltip: 'Options',
+                  onSelected: (v) {
+                    if (v == 'keepVolume') {
+                      ref.read(keepVolumeProvider.notifier).update((b) => !b);
+                    }
+                  },
+                  itemBuilder: (_) => [
+                    CheckedPopupMenuItem(
+                      value: 'keepVolume',
+                      checked: ref.watch(keepVolumeProvider),
+                      child: const Text('Keep volume on note entry'),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -195,7 +211,7 @@ class _Stepper extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final style = const TextStyle(fontFamily: 'monospace', fontSize: 13);
+    final style = const TextStyle(fontFamily: 'monospace', fontSize: 11);
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -216,7 +232,7 @@ class _Stepper extends StatelessWidget {
             children: [
               Text(
                 label,
-                style: style.copyWith(fontSize: 9, color: Colors.white54),
+                style: style.copyWith(fontSize: 8, color: Colors.white54),
               ),
               Text(value, style: style),
             ],

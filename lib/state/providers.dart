@@ -20,6 +20,9 @@ final cursorProvider = StateProvider<Cursor>((_) => (row: 0, ch: 0));
 final currentInstrumentProvider = StateProvider<int>((_) => 0);
 final octaveProvider = StateProvider<int>((_) => 4);
 final editStepProvider = StateProvider<int>((_) => 1);
+
+/// Note entry keeps the cell's existing volume instead of resetting it to default.
+final keepVolumeProvider = StateProvider<bool>((_) => true);
 final playingProvider = StateProvider<bool>((_) => false);
 final playRowProvider = StreamProvider<int>(
   (ref) => ref.watch(engineProvider).row,
