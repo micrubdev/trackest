@@ -1,8 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../engine/csound_engine.dart';
 import '../state/providers.dart';
 import 'instrument_sheet.dart';
+
+/// Diagnostics: long-press Play to see what Csound has logged since the last look.
+void _showEngineLog(BuildContext context, WidgetRef ref) {
+  final engine = ref.read(engineProvider);
+  final text = engine is CsoundEngine ? engine.drainMessages() : 'not a Csound engine';
+  showDialog<void>(
+    context: context,
+    builder: (_) => AlertDialog(
+      title: const Text('Engine log'),
+      content: SingleChildScrollView(
+        child: SelectableText(text.isEmpty ? '(no messages)' : text,
+            style: const TextStyle(fontFamily: 'monospace', fontSize: 11)),
+      ),
+    ),
+  );
+}
 
 class TransportBar extends ConsumerWidget {
   const TransportBar({super.key});
@@ -31,11 +48,14 @@ class TransportBar extends ConsumerWidget {
         padding: const EdgeInsets.symmetric(horizontal: 4),
         child: Row(
           children: [
-            IconButton.filled(
-              key: const Key('play'),
-              tooltip: playing ? 'Stop' : 'Play',
-              onPressed: togglePlay,
-              icon: Icon(playing ? Icons.stop : Icons.play_arrow),
+            GestureDetector(
+              onLongPress: () => _showEngineLog(context, ref),
+              child: IconButton.filled(
+                key: const Key('play'),
+                tooltip: playing ? 'Stop' : 'Play',
+                onPressed: togglePlay,
+                icon: Icon(playing ? Icons.stop : Icons.play_arrow),
+              ),
             ),
             const SizedBox(width: 4),
             _Stepper(

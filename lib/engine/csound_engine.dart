@@ -33,9 +33,12 @@ class CsoundEngine implements Engine {
     }
     _handle = _b.newAndroidCsound(async: false);
     _cs = _b.csoundOf(_handle);
-    _b.createMessageBuffer(_cs, 0);
+    // setOpenSlCallbacks installs its own (logcat) message callback, so the
+    // message buffer must be created after it or drainMessages sees nothing.
     _b.setOpenSlCallbacks(_handle);
-    _b.pause(_handle, true);
+    _b.createMessageBuffer(_cs, 0);
+    // Never Pause() here: in non-async mode a paused OpenSL callback returns
+    // without re-enqueueing a buffer, which kills the callback chain for good.
     for (final o in const ['-odac', '-d', '-m0', '-b256', '-B1024']) {
       _b.setOption(_cs, o);
     }
@@ -50,7 +53,6 @@ class CsoundEngine implements Engine {
       throw EngineException('Csound start failed:\n$msg');
     }
     _b.setControlChannel(_cs, 'playing', 0);
-    _b.pause(_handle, false);
     _poll = Timer.periodic(const Duration(milliseconds: 30), (_) {
       if (!isStarted) return;
       final r = _b.getControlChannel(_cs, 'row').round();
