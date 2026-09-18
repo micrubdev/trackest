@@ -6,15 +6,24 @@ import '../state/project_notifier.dart';
 import '../state/providers.dart';
 import 'instrument_sheet.dart';
 
-Future<void> _confirmClear(BuildContext context, ProjectNotifier notifier) async {
+Future<void> _confirmClear(
+  BuildContext context,
+  ProjectNotifier notifier,
+) async {
   final ok = await showDialog<bool>(
     context: context,
     builder: (context) => AlertDialog(
       title: const Text('Clear pattern?'),
       content: const Text('All 64 rows on every channel will be emptied.'),
       actions: [
-        TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
-        TextButton(onPressed: () => Navigator.pop(context, true), child: const Text('Clear')),
+        TextButton(
+          onPressed: () => Navigator.pop(context, false),
+          child: const Text('Cancel'),
+        ),
+        TextButton(
+          onPressed: () => Navigator.pop(context, true),
+          child: const Text('Clear'),
+        ),
       ],
     ),
   );
@@ -24,14 +33,18 @@ Future<void> _confirmClear(BuildContext context, ProjectNotifier notifier) async
 /// Diagnostics: long-press Play to see what Csound has logged since the last look.
 void _showEngineLog(BuildContext context, WidgetRef ref) {
   final engine = ref.read(engineProvider);
-  final text = engine is CsoundEngine ? engine.drainMessages() : 'not a Csound engine';
+  final text = engine is CsoundEngine
+      ? engine.drainMessages()
+      : 'not a Csound engine';
   showDialog<void>(
     context: context,
     builder: (_) => AlertDialog(
       title: const Text('Engine log'),
       content: SingleChildScrollView(
-        child: SelectableText(text.isEmpty ? '(no messages)' : text,
-            style: const TextStyle(fontFamily: 'monospace', fontSize: 11)),
+        child: SelectableText(
+          text.isEmpty ? '(no messages)' : text,
+          style: const TextStyle(fontFamily: 'monospace', fontSize: 11),
+        ),
       ),
     ),
   );
@@ -62,58 +75,89 @@ class TransportBar extends ConsumerWidget {
       color: Theme.of(context).colorScheme.surfaceContainerHigh,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 4),
-        child: Row(
+        child: Column(
           children: [
-            GestureDetector(
-              onLongPress: () => _showEngineLog(context, ref),
-              child: IconButton.filled(
-                key: const Key('play'),
-                tooltip: playing ? 'Stop' : 'Play',
-                onPressed: togglePlay,
-                icon: Icon(playing ? Icons.stop : Icons.play_arrow),
-              ),
-            ),
-            const SizedBox(width: 4),
-            _Stepper(
-              label: 'BPM',
-              value: '${project.bpm}',
-              onDec: () => notifier.setBpm(project.bpm - 1),
-              onInc: () => notifier.setBpm(project.bpm + 1),
-              onDecLong: () => notifier.setBpm(project.bpm - 10),
-              onIncLong: () => notifier.setBpm(project.bpm + 10),
-            ),
-            _Stepper(
-              label: 'Oct',
-              value: '$octave',
-              onDec: () => ref.read(octaveProvider.notifier).state = (octave - 1).clamp(1, 8),
-              onInc: () => ref.read(octaveProvider.notifier).state = (octave + 1).clamp(1, 8),
-            ),
-            const Spacer(),
-            DropdownButton<int>(
-              key: const Key('instrument'),
-              value: current,
-              underline: const SizedBox.shrink(),
-              style: const TextStyle(fontFamily: 'monospace', fontSize: 13, color: Colors.white),
-              items: [
-                for (final i in project.instruments)
-                  DropdownMenuItem(
-                    value: i.id,
-                    child: Text('${i.id.toString().padLeft(2, '0')} ${i.name}'),
+            Row(
+              children: [
+                GestureDetector(
+                  onLongPress: () => _showEngineLog(context, ref),
+                  child: IconButton.filled(
+                    key: const Key('play'),
+                    tooltip: playing ? 'Stop' : 'Play',
+                    onPressed: togglePlay,
+                    icon: Icon(playing ? Icons.stop : Icons.play_arrow),
                   ),
+                ),
+                const SizedBox(width: 4),
+                _Stepper(
+                  label: 'BPM',
+                  value: '${project.bpm}',
+                  onDec: () => notifier.setBpm(project.bpm - 1),
+                  onInc: () => notifier.setBpm(project.bpm + 1),
+                  onDecLong: () => notifier.setBpm(project.bpm - 10),
+                  onIncLong: () => notifier.setBpm(project.bpm + 10),
+                ),
+                _Stepper(
+                  label: 'Oct',
+                  value: '$octave',
+                  onDec: () => ref.read(octaveProvider.notifier).state =
+                      (octave - 1).clamp(1, 8),
+                  onInc: () => ref.read(octaveProvider.notifier).state =
+                      (octave + 1).clamp(1, 8),
+                ),
+                const Spacer(),
               ],
-              onChanged: (v) => ref.read(currentInstrumentProvider.notifier).state = v ?? 0,
             ),
-            IconButton(
-              key: const Key('clear'),
-              tooltip: 'Clear pattern',
-              icon: const Icon(Icons.delete_sweep),
-              onPressed: () => _confirmClear(context, notifier),
-            ),
-            IconButton(
-              key: const Key('edit-instrument'),
-              tooltip: 'Edit instrument',
-              icon: const Icon(Icons.tune),
-              onPressed: () => showInstrumentSheet(context, current),
+            // Second row: instrument selection. One row does not fit a phone.
+            Row(
+              children: [
+                const SizedBox(width: 8),
+                const Text(
+                  'Inst ',
+                  style: TextStyle(
+                    fontFamily: 'monospace',
+                    fontSize: 13,
+                    color: Colors.white54,
+                  ),
+                ),
+                Expanded(
+                  child: DropdownButton<int>(
+                    key: const Key('instrument'),
+                    value: current,
+                    isExpanded: true,
+                    underline: const SizedBox.shrink(),
+                    style: const TextStyle(
+                      fontFamily: 'monospace',
+                      fontSize: 13,
+                      color: Colors.white,
+                    ),
+                    items: [
+                      for (final i in project.instruments)
+                        DropdownMenuItem(
+                          value: i.id,
+                          child: Text(
+                            '${i.id.toString().padLeft(2, '0')} ${i.name}',
+                          ),
+                        ),
+                    ],
+                    onChanged: (v) =>
+                        ref.read(currentInstrumentProvider.notifier).state =
+                            v ?? 0,
+                  ),
+                ),
+                IconButton(
+                  key: const Key('edit-instrument'),
+                  tooltip: 'Edit instrument',
+                  icon: const Icon(Icons.tune),
+                  onPressed: () => showInstrumentSheet(context, current),
+                ),
+                IconButton(
+                  key: const Key('clear'),
+                  tooltip: 'Clear pattern',
+                  icon: const Icon(Icons.delete_sweep),
+                  onPressed: () => _confirmClear(context, notifier),
+                ),
+              ],
             ),
           ],
         ),
@@ -145,20 +189,35 @@ class _Stepper extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Text('$label ', style: style.copyWith(color: Colors.white54)),
         GestureDetector(
           onLongPress: onDecLong,
           child: IconButton(
             visualDensity: VisualDensity.compact,
+            padding: EdgeInsets.zero,
+            constraints: const BoxConstraints.tightFor(width: 36, height: 36),
             onPressed: onDec,
             icon: const Icon(Icons.remove, size: 18),
           ),
         ),
-        SizedBox(width: 30, child: Text(value, style: style, textAlign: TextAlign.center)),
+        SizedBox(
+          width: 36,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                label,
+                style: style.copyWith(fontSize: 9, color: Colors.white54),
+              ),
+              Text(value, style: style),
+            ],
+          ),
+        ),
         GestureDetector(
           onLongPress: onIncLong,
           child: IconButton(
             visualDensity: VisualDensity.compact,
+            padding: EdgeInsets.zero,
+            constraints: const BoxConstraints.tightFor(width: 36, height: 36),
             onPressed: onInc,
             icon: const Icon(Icons.add, size: 18),
           ),
